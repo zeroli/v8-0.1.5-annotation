@@ -122,6 +122,17 @@ typedef void (*WeakReferenceCallback)(Persistent<Object> object,
  * behind the scenes and the same rules apply to these values as to
  * their handles.
  */
+
+/*
+T类型是下面`Value`的一个子类
+template <class T>
+static inline T* ToApi(v8::internal::Handle<v8::internal::Object> obj) {
+  return reinterpret_cast<T*>(obj.location());
+}
+下面T*其实是internal:Object指针的指针类型（二级指针）强制转换成的。
+因而任何Value子类型不能有数据，只是一个类型空壳
+面向客户端的`Handle`对象和内部的`Handle`，都维护着底层对象的指针的指针
+*/
 template <class T> class Handle {
  public:
 
@@ -152,6 +163,10 @@ template <class T> class Handle {
      * handles. For example, converting from a Handle<String> to a
      * Handle<Number>.
      */
+    // 这个宏做的事情比较有意思：
+    // while (false) {
+    //    *((static_cast<T**>(0)) = static_cast<S*>(0);  // 编译器会帮忙做语义检查
+    //}
     TYPE_CHECK(T, S);
   }
 
@@ -176,10 +191,16 @@ template <class T> class Handle {
    * The handles' references are not checked.
    */
   template <class S> bool operator==(Handle<S> that) {
+    // *this => Handle对象本身
+    // **this => 在Handle对象上解引用，调用operator*函数，返回T*指针
+    // cast成void**类型
     void** a = reinterpret_cast<void**>(**this);
     void** b = reinterpret_cast<void**>(*that);
     if (a == 0) return b == 0;
     if (b == 0) return false;
+    // 二级指针void**，解引用会变成void*，一级指针
+    // NB: 注意Handle内部保存的T*其实是一个二级指针，底层真正对象的指针的指针
+    // 下面变成一级指针后，直接比较底层对象的指针
     return *a == *b;
   }
 
@@ -397,7 +418,10 @@ class HandleScope {
     }
   };
 
+  // 全局性的，代表当前handle scope
   static Data current_;
+  // 每创建一个新的scope，当前的scope就会以`previous`保存在新的scope里面
+  // 这样就可以形成一个链表
   const Data previous_;
 
   /**
@@ -481,6 +505,7 @@ class ScriptOrigin {
 /**
  * A compiled javascript script.
  */
+// 这个类应该就是我们的入口点， JS脚本编译和运行
 class Script {
  public:
 
@@ -635,6 +660,7 @@ class Primitive : public Value { };
 class Boolean : public Primitive {
  public:
   bool Value();
+  // 这是一个很好的入口点
   static inline Handle<Boolean> New(bool value);
 };
 

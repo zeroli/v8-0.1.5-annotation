@@ -43,15 +43,19 @@ namespace v8 { namespace internal {
 
 // Forward defined as
 // template <typename T, class P = FreeStoreAllocationPolicy> class List;
+// 这个list类底层是一片连续内存空间，提供random access，
+// 非常不同于stl list，类似于stl vector
 template <typename T, class P>
 class List {
  public:
   INLINE(explicit List(int capacity)) { Initialize(capacity); }
   INLINE(~List()) { DeleteData(data_); }
 
+  // 如果new 一个`List`也是通过这个内存分配策略
   INLINE(void* operator new(size_t size)) { return P::New(size); }
   INLINE(void operator delete(void* p, size_t)) { return P::Delete(p); }
 
+  // 提供random access
   inline T& operator[](int i) const  {
     ASSERT(0 <= i && i < length_);
     return data_[i];
@@ -101,10 +105,12 @@ class List {
   INLINE(void Initialize(int capacity));
 
  private:
+   // 底层是一片连续内存空间
   T* data_;
   int capacity_;
   int length_;
 
+  // 利用分配策略分配和释放内存
   INLINE(T* NewData(int n))  { return static_cast<T*>(P::New(n * sizeof(T))); }
   INLINE(void DeleteData(T* data))  { P::Delete(data); }
 

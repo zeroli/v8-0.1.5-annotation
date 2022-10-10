@@ -207,6 +207,7 @@ v8::Handle<v8::Primitive> ImplementationUtilities::Null() {
 v8::Handle<v8::Boolean> ImplementationUtilities::True() {
   if (IsDeadCheck("v8::True()")) return v8::Handle<v8::Boolean>();
   EnsureInitialized("v8::True()");
+  // `ToApi`将二级指针强转为Boolean*类型，保存到面向客户端的`Handle`中
   return v8::Handle<v8::Boolean>(ToApi<Boolean>(i::Factory::true_value()));
 }
 
@@ -347,7 +348,7 @@ void V8::DisposeGlobal(void** obj) {
 
 // --- H a n d l e s ---
 
-
+// 全局性的，代表当前handle scope
 HandleScope::Data HandleScope::current_ = { -1, NULL, NULL };
 
 
@@ -1004,6 +1005,7 @@ ScriptData* ScriptData::New(unsigned* data, int length) {
 // --- S c r i p t ---
 
 
+// OK，这个函数就是我们要分析的入口点，类似于main
 Local<Script> Script::Compile(v8::Handle<String> source,
                               v8::ScriptOrigin* origin,
                               v8::ScriptData* script_data) {
@@ -1032,6 +1034,8 @@ Local<Script> Script::Compile(v8::Handle<String> source,
   // If the pre-data isn't sane we simply ignore it
   if (pre_data != NULL && !pre_data->SanityCheck())
     pre_data = NULL;
+  // OK，调用内部compiler类的compile函数，返回一个JS function
+  // 一个脚本可以类似于一个大函数，脚本里面的代码就是大函数的函数代码
   i::Handle<i::JSFunction> boilerplate = i::Compiler::Compile(str,
                                                               name_obj,
                                                               line_offset,
@@ -1047,6 +1051,7 @@ Local<Script> Script::Compile(v8::Handle<String> source,
 }
 
 
+// 编译后的中间代码，可以拿到后台虚拟机VM中执行
 Local<Value> Script::Run() {
   ON_BAILOUT("v8::Script::Run()", return Local<Value>());
   LOG_API("Script::Run");
@@ -1055,7 +1060,9 @@ Local<Value> Script::Run() {
     HandleScope scope;
     i::Handle<i::JSFunction> fun = Utils::OpenHandle(this);
     EXCEPTION_PREAMBLE();
+    // 拿到全局的上下文环境
     i::Handle<i::Object> global(i::Top::context()->global());
+    // 开始调用执行引擎执行代码
     i::Handle<i::Object> result =
         i::Execution::Call(fun, global, 0, NULL, &has_pending_exception);
     EXCEPTION_BAILOUT_CHECK(Local<Value>());
@@ -1335,7 +1342,7 @@ bool Value::IsInt32() {
 Local<String> Value::ToString() {
   if (IsDeadCheck("v8::Value::ToString()")) return Local<String>();
   LOG_API("ToString");
-  i::Handle<i::Object> obj = Utils::OpenHandle(this);
+  i::Handle<i::Object> obj = Utils::OpenHandle(this);  // 这个`Value`对象一定是强转出来的，外界不能手动创建
   i::Handle<i::Object> str;
   if (obj->IsString()) {
     str = obj;

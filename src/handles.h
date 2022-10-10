@@ -36,6 +36,8 @@ namespace v8 { namespace internal {
 // Handles are only valid withing a HandleScope.
 // When a handle is created for an object a cell is allocated in the heap.
 
+// `Handle`包裹一个二级指针，指向一级T*指针，T对象内存分配在heap中
+// 当GC运行时，可以移动T对象内存，Handle对象不需要
 template<class T>
 class Handle {
  public:
@@ -56,6 +58,7 @@ class Handle {
     location_ = reinterpret_cast<T**>(handle.location());
   }
 
+  // Handle可以直接以对象指针的方式操作对象
   INLINE(T* operator ->() const)  { return operator*(); }
 
   // Check if this handle refers to the exact same object as the other handle.
@@ -64,6 +67,7 @@ class Handle {
   }
 
   // Provides the C++ dereference operator.
+  // 通过解引用操作，可以获得底层对象指针，进而操作对象
   INLINE(T* operator*() const);
 
   // Returns the address to where the raw pointer is stored.
@@ -74,7 +78,7 @@ class Handle {
   }
 
   template <class S> static Handle<T> cast(Handle<S> that) {
-    T::cast(*that);
+    T::cast(*that);  // 做编译检查
     return Handle<T>(reinterpret_cast<T**>(that.location()));
   }
 

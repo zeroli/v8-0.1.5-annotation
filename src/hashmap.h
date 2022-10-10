@@ -41,6 +41,7 @@ class Allocator BASE_EMBEDDED {
 };
 
 
+// HashMap实现中规中矩
 class HashMap {
  public:
   static Allocator DefaultAllocator;

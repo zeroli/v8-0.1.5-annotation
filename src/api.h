@@ -280,6 +280,9 @@ v8::internal::Handle<T> v8::internal::Handle<T>::EscapeFrom(
 
 // Implementations of ToLocal
 
+// 与`MAKE_OPEN_HANDLE`相对应
+// 从内部对象类型，二级指针，转成面向客户的对象一级指针
+// 包装成`Handle`
 #define MAKE_TO_LOCAL(Name, From, To) \
   Local<v8::To> Utils::Name(v8::internal::Handle<v8::internal::From> obj) { \
     return Local<To>(reinterpret_cast<To*>(obj.location())); \
@@ -306,12 +309,15 @@ MAKE_TO_LOCAL(Uint32ToLocal, Object, Uint32)
 
 // Implementations of OpenHandle
 
+// OpenHandle其实是将面向客户的一级指针又强制转回成内部的二级指针
+// 之前创建对象时，是将内部对象的二级指针转成面向客户对象的一级指针
 #define MAKE_OPEN_HANDLE(From, To) \
   v8::internal::Handle<v8::internal::To> Utils::OpenHandle(v8::From* that) { \
     return v8::internal::Handle<v8::internal::To>( \
         reinterpret_cast<v8::internal::To**>(that)); \
   }
 
+// `From`是面向客户的对象类型，`To`是内部对象类型
 MAKE_OPEN_HANDLE(Template, TemplateInfo)
 MAKE_OPEN_HANDLE(FunctionTemplate, FunctionTemplateInfo)
 MAKE_OPEN_HANDLE(ObjectTemplate, ObjectTemplateInfo)
