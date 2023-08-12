@@ -410,6 +410,10 @@ class HandleScope {
   class Data {
    public:
     int extensions;
+    // scope里分配的对象的指针会被放在一个void*指针数组中
+    // next二级指针指向下一个可用的数组槽，limit指向最后一个数组槽
+    // 数组元素就是内部对象指针
+    // 二级指针就会被返回给用户的`Handle`，但是会进行降级转成用户类型的一级指针
     void** next;
     void** limit;
     inline void Initialize() {

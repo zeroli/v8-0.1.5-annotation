@@ -41,7 +41,9 @@ class Allocator BASE_EMBEDDED {
 };
 
 
-// HashMap实现中规中矩
+// linear probing mode, a large 1-d array for entries, and no delete op supported
+// insert is just append at the end, and linear run time
+//
 class HashMap {
  public:
   static Allocator DefaultAllocator;

@@ -184,6 +184,7 @@ static inline bool EmptyCheck(const char* location, v8::Data* obj) {
 static i::StringInputBuffer write_input_buffer;
 
 
+// 动态检查并初始化
 static void EnsureInitialized(const char* location) {
   if (IsDeadCheck(location)) return;
   ApiCheck(v8::V8::Initialize(), location, "Error initializing V8");
@@ -395,8 +396,8 @@ void** v8::HandleScope::CreateHandle(void* value) {
   // Update the current next field, set the value in the created
   // handle, and return the result.
   ASSERT(result < current_.limit);
-  current_.next = result + 1;
-  *result = value;
+  current_.next = result + 1;  // 移动到下一个可用槽
+  *result = value;  // 保存新创建的内部对象的指针
   return result;
 }
 
@@ -2009,6 +2010,8 @@ v8::String::ExternalAsciiStringResource*
 
 double Number::Value() {
   if (IsDeadCheck("v8::Number::Value()")) return 0;
+  // 这里将空壳类对象指针强转为内部的二级指针，包装成一个Handle
+  // 然后获取它内部值
   i::Handle<i::Object> obj = Utils::OpenHandle(this);
   return obj->Number();
 }
@@ -2085,6 +2088,7 @@ void v8::Object::SetInternalField(int index, v8::Handle<Value> value) {
 
 // --- E n v i r o n m e n t ---
 
+// 整个V8系统初始化
 bool v8::V8::Initialize() {
   if (i::V8::HasBeenSetup()) return true;
   HandleScope scope;
@@ -2402,8 +2406,10 @@ Local<String> v8::String::NewSymbol(const char* data, int length) {
 
 
 Local<Number> v8::Number::New(double value) {
+  // 执行任何一个LIB的接口函数，都会动态检查并初始化V8引擎
   EnsureInitialized("v8::Number::New()");
   i::Handle<i::Object> result = i::Factory::NewNumber(value);
+  // 从内部二级指针强转为一级指针，然后包装成handle返回
   return Utils::NumberToLocal(result);
 }
 

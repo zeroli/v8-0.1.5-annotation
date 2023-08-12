@@ -267,6 +267,9 @@ class Utils {
 
 template <class T>
 static inline T* ToApi(v8::internal::Handle<v8::internal::Object> obj) {
+  // location返回一个内部对象的二级指针，这里强转为一个面向客户端的
+  // 空壳对象的一级指针, T就是空壳对象
+  // 所谓空壳对象就是只有接口，没有数据
   return reinterpret_cast<T*>(obj.location());
 }
 

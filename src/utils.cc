@@ -35,7 +35,7 @@
 
 namespace v8 { namespace internal {
 
-
+// 算法来自于stanford大学
 int32_t NextPowerOf2(uint32_t x) {
   x = x - 1;
   x = x | (x >> 1);

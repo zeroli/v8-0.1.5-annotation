@@ -268,6 +268,9 @@ class Access {
 };
 
 
+// 从实现上来看，这个Vector类并不管理内存
+// 它只是托管一段内存空间。但是可以通过接口Dispose来手动删除内存
+// 所以用户端得自己知道自己要干什么
 template <typename T>
 class Vector {
  public:

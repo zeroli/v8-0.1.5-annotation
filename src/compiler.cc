@@ -206,6 +206,7 @@ Handle<JSFunction> Compiler::Compile(Handle<String> source,
     script->set_column_offset(Smi::FromInt(column_offset));
   }
 
+  // 这个make函数里面就在进行编译的过程
   Handle<JSFunction> result =
       MakeFunction(true, false, script, extension, pre_data);
 

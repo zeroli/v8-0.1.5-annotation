@@ -66,7 +66,7 @@ HashMap::~HashMap() {
 HashMap::Entry* HashMap::Lookup(void* key, uint32_t hash, bool insert) {
   // Find a matching entry.
   Entry* p = Probe(key, hash);
-    if (p->key != NULL) {
+  if (p->key != NULL) {
     return p;
   }
 

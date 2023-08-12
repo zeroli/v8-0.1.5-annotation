@@ -95,6 +95,7 @@ class Embedded {
 
 
 // Superclass for classes only using statics.
+// 这是一个空类！！
 class AllStatic {
 #ifdef DEBUG
  public:
