@@ -1223,6 +1223,7 @@ class Visitor BASE_EMBEDDED {
   void SetStackOverflow() { stack_overflow_ = true; }
 
 
+  // 子类实现所有的visit不同节点的函数实现
   // Individual nodes
 #define DEF_VISIT(type)                         \
   virtual void Visit##type(type* node) = 0;

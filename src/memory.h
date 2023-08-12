@@ -47,6 +47,10 @@ class Memory {
     return *reinterpret_cast<int*>(addr);
   }
 
+  // 这个函数是将addr地址处保存的地址取出来
+  // (addr) => 保存的指针值
+  // 注意这是返回的是一个地址引用，所以可以直接对它赋值，
+  // 从而改写(addr)保存的地址值
   static Address& Address_at(Address addr)  {
     return *reinterpret_cast<Address*>(addr);
   }
