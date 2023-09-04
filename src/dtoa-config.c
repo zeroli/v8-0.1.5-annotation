@@ -62,5 +62,5 @@
 /* Make sure we use the David M. Gay version of strtod(). On Linux, we
  * cannot use the same name (maybe the function does not have weak
  * linkage?). */
-#define strtod gay_strtod
-#include "third_party/dtoa/dtoa.c"
+//#define strtod gay_strtod
+//#include "third_party/dtoa/dtoa.c"

@@ -2101,6 +2101,10 @@ bool v8::V8::Initialize() {
 }
 
 
+const char* v8::V8::GetVersion() {
+  return "0.1.5";
+}
+
 Persistent<Context> v8::Context::New(v8::ExtensionConfiguration* extensions,
                                      v8::Handle<ObjectTemplate> global_template,
                                      v8::Handle<Value> global_object) {

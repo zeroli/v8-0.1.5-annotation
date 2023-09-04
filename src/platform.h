@@ -44,8 +44,13 @@
 #ifndef V8_PLATFORM_H_
 #define V8_PLATFORM_H_
 
+#ifndef WIN32
+#define WIN32
+#endif
+
 #ifdef WIN32
 
+#if 0  // cmath defines them as macro
 enum {
   FP_NAN,
   FP_INFINITE,
@@ -53,24 +58,29 @@ enum {
   FP_SUBNORMAL,
   FP_NORMAL
 };
+#endif
 
+#ifndef INFINITY
 #define INFINITY HUGE_VAL
+#endif
 
 namespace v8 { namespace internal {
 int isfinite(double x);
 } }
+#if 0  // cmath defines them
 int isnan(double x);
 int isinf(double x);
 int isless(double x, double y);
 int isgreater(double x, double y);
 int fpclassify(double x);
 int signbit(double x);
-
+#endif
 int random();
 
+#if 0
 int strcasecmp(const char* s1, const char* s2);
 int strncasecmp(const char* s1, const char* s2, int n);
-
+#endif
 #else
 
 // Unfortunately, the INFINITY macro cannot be used with the '-pedantic'

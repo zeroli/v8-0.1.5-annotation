@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "compare": "cpp"
+        "*.cu": "cpp",
+        "compare": "cpp",
+        "cmath": "cpp"
     }
 }

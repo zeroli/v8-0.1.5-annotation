@@ -33,7 +33,7 @@
 
 void RunShell(v8::Handle<v8::Context> context);
 bool ExecuteString(v8::Handle<v8::String> source,
-                   v8::Handle<v8::Value> name,
+                   v8::Handle<v8::String> name,
                    bool print_result);
 v8::Handle<v8::Value> Print(const v8::Arguments& args);
 v8::Handle<v8::Value> Load(const v8::Arguments& args);
@@ -44,7 +44,6 @@ void ProcessRuntimeFlags(int argc, char* argv[]);
 
 
 int main(int argc, char* argv[]) {
-  v8::V8::SetFlagsFromCommandLine(&argc, argv, true);
   v8::HandleScope handle_scope;
   // Create a template for the global object.
   v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
@@ -171,7 +170,7 @@ void RunShell(v8::Handle<v8::Context> context) {
     char* str = fgets(buffer, kBufferSize, stdin);
     if (str == NULL) break;
     v8::HandleScope handle_scope;
-    ExecuteString(v8::String::New(str), v8::Undefined(), true);
+    ExecuteString(v8::String::New(str), v8::String::New("<stdin>"), true);
   }
   printf("\n");
 }
@@ -179,7 +178,7 @@ void RunShell(v8::Handle<v8::Context> context) {
 
 // Executes a string within the current v8 context.
 bool ExecuteString(v8::Handle<v8::String> source,
-                   v8::Handle<v8::Value> name,
+                   v8::Handle<v8::String> name,
                    bool print_result) {
   v8::HandleScope handle_scope;
   v8::TryCatch try_catch;

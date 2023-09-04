@@ -1664,7 +1664,8 @@ class V8 {
   static void SetFlagsFromString(const char* str, int length);
 
   /** Sets the version fields in the given VersionInfo struct.*/
-  static void GetVersion(VersionInfo* info);
+  static void SetVersion(VersionInfo* info);
+  static const char* GetVersion();
 
   /**
    * Enables the host application to provide a mechanism for recording

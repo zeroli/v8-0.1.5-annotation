@@ -153,6 +153,7 @@ int random() {
 }
 
 
+#if 0
 // Case-insensitive string comparisons. Use stricmp() on Win32. Usually defined
 // in strings.h.
 int strcasecmp(const char* s1, const char* s2) {
@@ -165,6 +166,7 @@ int strcasecmp(const char* s1, const char* s2) {
 int strncasecmp(const char* s1, const char* s2, int n) {
   return strnicmp(s1, s2, n);
 }
+#endif
 
 namespace v8 { namespace internal {
 
@@ -1029,6 +1031,9 @@ int OS::StackWalk(OS::StackFrame* frames, int frames_size) {
   // Load the required functions from DLL's.
   if (!LoadDbgHelpAndTlHelp32()) return kStackWalkError;
 
+  return kStackWalkError;
+
+  #if 0  // compilation error, disable it
   // Get the process and thread handles.
   HANDLE process_handle = GetCurrentProcess();
   HANDLE thread_handle = GetCurrentThread();
@@ -1135,6 +1140,7 @@ int OS::StackWalk(OS::StackFrame* frames, int frames_size) {
 
   // Return the number of frames filled in.
   return frames_count;
+  #endif
 }
 
 // Restore warnings to previous settings.
